@@ -47,8 +47,8 @@ const events = [
 ];
 
 const chatThreads = [
-  { initials: "EA", name: "Ece Aydin", preview: "Rotayi guncelledim." },
-  { initials: "MC", name: "Mina Cetin", preview: "Kapak gorseli hazir." },
+  { initials: "EK", name: "Ekip", preview: "Yeni guncellemeler burada." },
+  { initials: "DB", name: "Denbook", preview: "Bildirimler ve notlar." },
 ];
 
 const chatMessages = [
@@ -110,7 +110,6 @@ const adminLogsRoot = document.getElementById("admin-logs");
 const adminUserCount = document.getElementById("admin-user-count");
 const adminPostCount = document.getElementById("admin-post-count");
 const adminAdminCount = document.getElementById("admin-admin-count");
-const quickAdminButton = document.getElementById("quick-admin");
 const seedDemoButton = document.getElementById("seed-demo");
 const refreshAdminUsersButton = document.getElementById("refresh-admin-users");
 const refreshAdminPostsButton = document.getElementById("refresh-admin-posts");
@@ -120,8 +119,8 @@ const coverArt = document.querySelector(".cover-art");
 const allViews = ["feed", "circles", "pulse", "market", "events", "chat", "profile", "admin"];
 
 const onlineFallback = [
-  { initials: "LA", name: "Lara Ates", state: "tasarim toplantisinda" },
-  { initials: "EA", name: "Ece Aydin", state: "simdi aktif" },
+  { initials: "EK", name: "Topluluk", state: "cevrim ici" },
+  { initials: "DB", name: "Destek", state: "simdi aktif" },
 ];
 
 function initials(name) {
@@ -285,11 +284,7 @@ function renderFriends() {
 }
 
 function renderCommunities() {
-  const items = [
-    "Uretenler Kulubu • haftalik meetup",
-    "Sehir Fotografi Rotasi • acik cagrilar",
-    "No-Code Builders TR • demo gunleri",
-  ];
+  const items = ["Uretenler Kulubu • haftalik meetup", "Sehir Fotografi Rotasi • acik cagrilar", "No-Code Builders TR • acik paylasim"];
   communityRoot.innerHTML = items.map((item) => `<article class="community-card"><strong>${item}</strong></article>`).join("");
 }
 
@@ -650,16 +645,6 @@ async function refreshLogs() {
   renderAdmin();
 }
 
-async function quickAdminLogin() {
-  const payload = await api("/api/dev-login-admin", {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
-  setStateFromPayload(payload);
-  renderAll();
-  setActiveView("admin");
-}
-
 async function resetDemo() {
   const payload = await api("/api/reset-demo", {
     method: "POST",
@@ -667,7 +652,7 @@ async function resetDemo() {
   });
   setStateFromPayload(payload);
   renderAll();
-  showToast("Demo verisi sifirlandi.");
+  showToast("Veriler sifirlandi.");
 }
 
 document.querySelectorAll("[data-view]").forEach((button) => {
@@ -740,7 +725,6 @@ showLoginButton.addEventListener("click", () => toggleAuthMode("login"));
 showRegisterButton.addEventListener("click", () => toggleAuthMode("register"));
 logoutButton.addEventListener("click", () => handleLogout().catch((error) => showToast(error.message, true)));
 saveProfileButton.addEventListener("click", () => saveProfile().catch((error) => showToast(error.message, true)));
-quickAdminButton.addEventListener("click", () => quickAdminLogin().catch((error) => showToast(error.message, true)));
 seedDemoButton.addEventListener("click", () => resetDemo().catch((error) => showToast(error.message, true)));
 refreshAdminUsersButton.addEventListener("click", () => loadBootstrap().catch((error) => showToast(error.message, true)));
 refreshAdminPostsButton.addEventListener("click", () => loadBootstrap().catch((error) => showToast(error.message, true)));
