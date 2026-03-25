@@ -1,0 +1,11 @@
+{
+  "name": "denbook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Denbook full-stack social web prototype",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node server.test.js"
+  }
+}
