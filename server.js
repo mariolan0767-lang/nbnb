@@ -233,86 +233,6 @@ function createDatabase(dbFile = DB_FILE) {
 function seedDatabase(db) {
   const userCount = db.prepare("SELECT COUNT(*) AS count FROM users").get().count;
   if (userCount > 0) return;
-
-  const createdAt = nowIso();
-  const insertUser = db.prepare(`
-    INSERT INTO users (name, email, password_hash, role, bio, followers_count, friends_count, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  insertUser.run(
-    "Deniz Kaya",
-    "deniz@denbook.local",
-    hashPassword("123456"),
-    "member",
-    "Urun tasarimcisi, sehir gezgini, topluluk kurucusu.",
-    12400,
-    684,
-    createdAt
-  );
-  insertUser.run(
-    "Admin",
-    "admin@denbook.local",
-    hashPassword("denbook123"),
-    "admin",
-    "Platform yonetimi ve topluluk moderasyonu.",
-    2100,
-    128,
-    createdAt
-  );
-  insertUser.run(
-    "Ece Aydin",
-    "ece@denbook.local",
-    hashPassword("123456"),
-    "moderator",
-    "Topluluk moderasyonu ve etkinlik planlama.",
-    890,
-    210,
-    createdAt
-  );
-
-  const insertPost = db.prepare(`
-    INSERT INTO posts (author_id, text, image, created_at)
-    VALUES (?, ?, ?, ?)
-  `);
-  insertPost.run(
-    1,
-    "Denbook icin topluluk merkezli yeni akis tasarimini bugun yayina aldik. Hikayeler, yerel etkinlikler ve kisa videolar ayni ritimde akiyor.",
-    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-    createdAt
-  );
-  insertPost.run(
-    3,
-    "Cumartesi gunu Moda sahilde tasarim yuruyusu var. Kayit olan herkese mini rota paketi gonderecegim.",
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-    createdAt
-  );
-
-  db.prepare("INSERT INTO comments (post_id, user_id, text, created_at) VALUES (?, ?, ?, ?)").run(
-    1,
-    3,
-    "Akis kartlari ve etkinlik blend'i iyi duruyor.",
-    createdAt
-  );
-  db.prepare("INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)").run(1, 2);
-  db.prepare("INSERT INTO friendships (requester_id, addressee_id, status) VALUES (?, ?, ?)").run(1, 3, "accepted");
-  db.prepare("INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)").run(
-    1,
-    "Ece Aydin gonderine yorum yapti.",
-    createdAt
-  );
-  db.prepare("INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)").run(
-    2,
-    "Yeni uye kayitlari admin panelinde goruntulenebilir.",
-    createdAt
-  );
-  db.prepare("INSERT INTO audit_logs (actor_id, action, target_type, target_id, details, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(
-    2,
-    "seed",
-    "system",
-    "bootstrap",
-    "Demo verisi olusturuldu",
-    createdAt
-  );
 }
 
 function publicUser(row) {
@@ -544,13 +464,14 @@ async function handleApi(db, request, response, pathname) {
       return;
     }
     try {
+      const role = db.prepare("SELECT COUNT(*) AS count FROM users").get().count === 0 ? "admin" : "member";
       const result = db
         .prepare(
-          "INSERT INTO users (name, email, password_hash, role, bio, followers_count, friends_count, created_at) VALUES (?, ?, ?, 'member', 'Yeni uye.', 0, 0, ?)"
+          "INSERT INTO users (name, email, password_hash, role, bio, followers_count, friends_count, created_at) VALUES (?, ?, ?, ?, 'Yeni uye.', 0, 0, ?)"
         )
-        .run(name, email, hashPassword(password), nowIso());
+        .run(name, email, hashPassword(password), role, nowIso());
       const session = createSession(db, Number(result.lastInsertRowid));
-      logAction(db, Number(result.lastInsertRowid), "register", "user", result.lastInsertRowid, "Yeni kayit");
+      logAction(db, Number(result.lastInsertRowid), "register", "user", result.lastInsertRowid, role === "admin" ? "Ilk kayit admin oldu" : "Yeni kayit");
       sendJson(response, 200, bootstrap(db, { headers: { cookie: `${SESSION_COOKIE}=${session.token}` } }), sendSessionCookies(response, session));
     } catch {
       sendJson(response, 400, { error: "Bu e-posta zaten kayitli." });
@@ -735,12 +656,6 @@ async function handleApi(db, request, response, pathname) {
     db.prepare("DELETE FROM posts WHERE id = ?").run(postId);
     logAction(db, actor.id, "post.delete", "post", postId, "Gonderi silindi");
     sendJson(response, 200, bootstrap(db, request));
-    return;
-  }
-
-  if (request.method === "POST" && pathname === "/api/dev-login-admin") {
-    const sessionData = createSession(db, 2);
-    sendJson(response, 200, bootstrap(db, { headers: { cookie: `${SESSION_COOKIE}=${sessionData.token}` } }), sendSessionCookies(response, sessionData));
     return;
   }
 
