@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Denbook</title>
+    <meta name="theme-color" content="#d95d39" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark gradient-a">D</div>
+          <div>
+            <p class="eyebrow">social web app</p>
+            <h1>Denbook</h1>
+          </div>
+        </div>
+        <label class="searchbar">
+          <span>ara</span>
+          <input id="search-input" type="text" placeholder="Kisiler, gonderiler, gruplar" />
+        </label>
+        <nav class="topnav" aria-label="Ana gezinme">
+          <button class="nav-icon active" data-view="feed" title="Akis">⌂</button>
+          <button class="nav-icon" data-view="circles" title="Arkadaslar">◎</button>
+          <button class="nav-icon" data-view="pulse" title="Kisa Videolar">▷</button>
+          <button class="nav-icon" data-view="chat" title="Mesajlar">✉</button>
+          <button class="nav-icon" data-view="profile" title="Profil">◐</button>
+        </nav>
+        <div class="auth-panel">
+          <button class="ghost" id="open-auth">Giris / Kayit</button>
+          <div class="profile-chip hidden" id="profile-chip">
+            <div class="avatar gradient-a" id="profile-chip-avatar">DK</div>
+            <div>
+              <strong id="profile-chip-name">Deniz Kaya</strong>
+              <span id="profile-chip-role">yaratici mod</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="layout-grid">
+        <aside class="leftbar card">
+          <section>
+            <h2>Menu</h2>
+            <div class="menu-list">
+              <button class="menu-item active" data-view="feed">
+                <span class="menu-icon coral">⌂</span>
+                <span><strong>Ana akis</strong><small>gundem, hikayeler, paylasim</small></span>
+              </button>
+              <button class="menu-item" data-view="circles">
+                <span class="menu-icon sky">◎</span>
+                <span><strong>Cevre</strong><small>arkadaslar ve topluluklar</small></span>
+              </button>
+              <button class="menu-item" data-view="pulse">
+                <span class="menu-icon amber">▷</span>
+                <span><strong>Pulse</strong><small>kisa videolar ve trendler</small></span>
+              </button>
+              <button class="menu-item" data-view="market">
+                <span class="menu-icon mint">▣</span>
+                <span><strong>Pazar</strong><small>urunler ve listelemeler</small></span>
+              </button>
+              <button class="menu-item" data-view="events">
+                <span class="menu-icon lilac">◌</span>
+                <span><strong>Etkinlikler</strong><small>yerel bulusmalar</small></span>
+              </button>
+              <button class="menu-item" data-view="chat">
+                <span class="menu-icon rose">✉</span>
+                <span><strong>Mesaj kutusu</strong><small>anlik sohbetler</small></span>
+              </button>
+              <button class="menu-item" data-view="profile">
+                <span class="menu-icon ink">◐</span>
+                <span><strong>Profil</strong><small>kapak, istatistik, paylasimlar</small></span>
+              </button>
+              <button class="menu-item hidden" data-view="admin" id="admin-menu-button">
+                <span class="menu-icon rose">⚙</span>
+                <span><strong>Yonetim</strong><small>uyeler, gonderiler, durum</small></span>
+              </button>
+            </div>
+          </section>
+
+          <section class="leftbar-footer">
+            <h3>Bugun</h3>
+            <div class="mini-stat"><span>Takip edilen konu</span><strong>#istanbultasarim</strong></div>
+            <div class="mini-stat"><span>Yeni bildirim</span><strong>12</strong></div>
+            <div class="mini-stat"><span>Yeni mesaj</span><strong>4</strong></div>
+          </section>
+        </aside>
+
+        <main class="content">
+          <section class="search-results card hidden" id="search-results"></section>
+          <section class="view active" id="feed-view">
+            <div class="hero-banner card">
+              <div>
+                <p class="eyebrow">bugunun ozeti</p>
+                <h2>Toplulugun nabzi tek ekranda</h2>
+                <p>Hikayeler, gonderiler, canli topluluk notlari ve yakindaki etkinlikler tek akis icinde.</p>
+              </div>
+              <div class="hero-metrics">
+                <div><strong>128K</strong><span>aktif uye</span></div>
+                <div><strong>9.4K</strong><span>gunluk paylasim</span></div>
+                <div><strong>87%</strong><span>mobil trafik</span></div>
+              </div>
+            </div>
+
+            <section class="stories card">
+              <div class="section-head"><h3>Hikayeler</h3><button>tumunu goster</button></div>
+              <div class="story-row" id="stories"></div>
+            </section>
+
+            <section class="composer card">
+              <div class="composer-head">
+                <div class="avatar gradient-a">DK</div>
+                <textarea id="post-input" rows="3" placeholder="Bugun ne paylasmak istiyorsun?"></textarea>
+              </div>
+              <div class="composer-actions">
+                <label class="ghost file-trigger">
+                  <input id="post-image-input" type="file" accept="image/*" />
+                  <span>Fotograf sec</span>
+                </label>
+                <button class="ghost">Canli yayin</button>
+                <button class="ghost">Etkinlik</button>
+                <button class="primary" id="publish-post">Paylas</button>
+              </div>
+              <img class="upload-preview hidden" id="post-image-preview" alt="Secilen gorsel onizlemesi" />
+            </section>
+
+            <section class="feed-list" id="feed-list"></section>
+          </section>
+
+          <section class="view" id="circles-view">
+            <div class="section-title card"><h2>Cevre</h2><p>Arkadas onerileri, topluluklar ve bugun dogum gunu olanlar.</p></div>
+            <div class="split-grid">
+              <section class="card panel-card">
+                <div class="section-head"><h3>Arkadas onerileri</h3><button>yenile</button></div>
+                <div class="person-list" id="friends-list"></div>
+              </section>
+              <section class="card panel-card">
+                <div class="section-head"><h3>Topluluklar</h3><button>kesfet</button></div>
+                <div class="community-list" id="community-list"></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="view" id="pulse-view">
+            <div class="section-title card"><h2>Pulse</h2><p>Kisa videolar, trend sesler ve one cikan yaraticilar.</p></div>
+            <div class="video-grid" id="video-grid"></div>
+          </section>
+
+          <section class="view" id="market-view">
+            <div class="section-title card"><h2>Pazar</h2><p>Yerel urunler, dijital servisler ve haftanin firsatlari.</p></div>
+            <div class="market-grid" id="market-grid"></div>
+          </section>
+
+          <section class="view" id="events-view">
+            <div class="section-title card"><h2>Etkinlikler</h2><p>Hafta sonu planlari, kayit olan kisiler ve mekan notlari.</p></div>
+            <div class="event-list" id="event-list"></div>
+          </section>
+
+          <section class="view" id="chat-view">
+            <div class="section-title card"><h2>Mesaj kutusu</h2><p>Sabitlenmis sohbetler, cevrim ici durumlar ve hizli cevaplar.</p></div>
+            <div class="chat-layout">
+              <section class="card chat-sidebar" id="chat-list"></section>
+              <section class="card chat-window">
+                <div class="chat-header">
+                  <div class="avatar gradient-b">EA</div>
+                  <div><strong>Ece Aydin</strong><span>simdi aktif</span></div>
+                </div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-compose" id="chat-form">
+                  <input id="chat-input" type="text" placeholder="Mesaj yaz..." />
+                  <button class="primary" type="submit">Gonder</button>
+                </form>
+              </section>
+            </div>
+          </section>
+
+          <section class="view" id="profile-view">
+            <div class="profile-cover card">
+              <div class="cover-art"></div>
+              <div class="profile-main">
+                <div class="avatar xl gradient-a" id="profile-avatar">DK</div>
+                <div>
+                  <h2 id="profile-name">Deniz Kaya</h2>
+                  <p id="profile-bio">Urun tasarimcisi, sehir gezgini, topluluk kurucusu.</p>
+                </div>
+                <div class="profile-stats">
+                  <div><strong id="profile-followers">12.4K</strong><span>takipci</span></div>
+                  <div><strong id="profile-friends">684</strong><span>arkadas</span></div>
+                  <div><strong id="profile-post-count">96</strong><span>gonderi</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="split-grid">
+              <section class="card panel-card">
+                <div class="section-head"><h3>Hakkinda</h3><button id="save-profile">kaydet</button></div>
+                <div class="profile-form">
+                  <label>
+                    <span>Ad soyad</span>
+                    <input id="profile-name-input" type="text" placeholder="Ad soyad" />
+                  </label>
+                  <label>
+                    <span>Kisa biyografi</span>
+                    <textarea id="profile-bio-input" rows="4" placeholder="Kendini tanit"></textarea>
+                  </label>
+                  <label class="ghost file-trigger">
+                    <input id="avatar-image-input" type="file" accept="image/*" />
+                    <span>Profil resmi sec</span>
+                  </label>
+                  <label class="ghost file-trigger">
+                    <input id="cover-image-input" type="file" accept="image/*" />
+                    <span>Kapak resmi sec</span>
+                  </label>
+                </div>
+              </section>
+              <section class="card panel-card">
+                <div class="section-head"><h3>Kaydedilen anlar</h3><button>arsiv</button></div>
+                <div class="memory-grid">
+                  <div class="memory-card gradient-a"></div>
+                  <div class="memory-card gradient-b"></div>
+                  <div class="memory-card gradient-c"></div>
+                  <div class="memory-card gradient-d"></div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="view" id="admin-view">
+            <div class="section-title card">
+              <h2>Yonetim paneli</h2>
+              <p>Kullanici, oturum ve gonderi verilerini yerel olarak yonet.</p>
+            </div>
+            <div class="split-grid">
+              <section class="card panel-card">
+                <div class="section-head"><h3>Platform durumu</h3><button id="seed-demo">demo veri yenile</button></div>
+                <div class="admin-stats">
+                  <div><strong id="admin-user-count">0</strong><span>uye</span></div>
+                  <div><strong id="admin-post-count">0</strong><span>gonderi</span></div>
+                  <div><strong id="admin-admin-count">0</strong><span>yonetici</span></div>
+                </div>
+              </section>
+              <section class="card panel-card">
+                <div class="section-head"><h3>Admin girisi</h3><button id="quick-admin">admin ol</button></div>
+                <p class="admin-note">Varsayilan admin: <strong>admin@denbook.local</strong> / <strong>denbook123</strong></p>
+              </section>
+            </div>
+            <div class="split-grid">
+              <section class="card panel-card">
+                <div class="section-head"><h3>Kullanicilar</h3><button id="refresh-admin-users">yenile</button></div>
+                <div class="admin-list" id="admin-users"></div>
+              </section>
+              <section class="card panel-card">
+                <div class="section-head"><h3>Gonderiler</h3><button id="refresh-admin-posts">yenile</button></div>
+                <div class="admin-list" id="admin-posts"></div>
+              </section>
+            </div>
+            <section class="card panel-card">
+              <div class="section-head"><h3>Loglar</h3><button id="refresh-admin-logs">yenile</button></div>
+              <div class="admin-list" id="admin-logs"></div>
+            </section>
+          </section>
+        </main>
+
+        <aside class="rightbar">
+          <section class="card panel-card">
+            <div class="section-head"><h3>Bildirimler</h3><button>tumunu gor</button></div>
+            <div class="notification-list" id="notification-list"></div>
+          </section>
+
+          <section class="card panel-card">
+            <div class="section-head"><h3>Trend konu</h3><button>yenile</button></div>
+            <div class="trend-list">
+              <article><strong>#denbooklaunch</strong><span>24.8K gonderi</span></article>
+              <article><strong>#haftasonuplani</strong><span>18.1K gonderi</span></article>
+              <article><strong>#uretenlerkulubu</strong><span>11.3K gonderi</span></article>
+            </div>
+          </section>
+
+          <section class="card panel-card">
+            <div class="section-head"><h3>Aktif kisiler</h3><button>gor</button></div>
+            <div class="online-list" id="online-list"></div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <div class="toast hidden" id="toast"></div>
+
+    <div class="auth-modal hidden" id="auth-modal">
+      <div class="auth-card card">
+        <div class="section-head">
+          <h3>Denbook hesabi</h3>
+          <button id="close-auth">kapat</button>
+        </div>
+        <div class="auth-tabs">
+          <button class="primary" id="show-login">Giris</button>
+          <button class="ghost" id="show-register">Kayit</button>
+        </div>
+
+        <form class="auth-form" id="login-form">
+          <label>
+            <span>E-posta</span>
+            <input id="login-email" type="email" placeholder="ornek@mail.com" />
+          </label>
+          <label>
+            <span>Sifre</span>
+            <input id="login-password" type="password" placeholder="Sifre" />
+          </label>
+          <button class="primary" type="submit">Giris yap</button>
+        </form>
+
+        <form class="auth-form hidden" id="register-form">
+          <label>
+            <span>Ad soyad</span>
+            <input id="register-name" type="text" placeholder="Ad soyad" />
+          </label>
+          <label>
+            <span>E-posta</span>
+            <input id="register-email" type="email" placeholder="ornek@mail.com" />
+          </label>
+          <label>
+            <span>Sifre</span>
+            <input id="register-password" type="password" placeholder="Sifre" />
+          </label>
+          <button class="primary" type="submit">Kayit ol</button>
+        </form>
+
+        <p class="auth-message" id="auth-message"></p>
+        <button class="ghost hidden" id="logout-button">Cikis yap</button>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
