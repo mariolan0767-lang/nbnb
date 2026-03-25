@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: denbook
+    runtime: node
+    buildCommand: ""
+    startCommand: npm start
+    healthCheckPath: /api/healthz
+    disk:
+      name: denbook-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: APP_URL
+        sync: false
+      - key: DB_FILE
+        value: /opt/render/project/src/data/denbook.sqlite
+      - key: SECURE_COOKIE
+        value: true
